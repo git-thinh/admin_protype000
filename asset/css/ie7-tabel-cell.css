@@ -1,0 +1,12 @@
+﻿body { 
+    behavior: url(/asset/css/table-cell-ie.htc);
+}
+
+.table {
+    -dt-border-spacing: 0px; 
+    -dt-display: table; 
+}
+ 
+.table-cell {
+    -dt-display: table-cell; 
+}

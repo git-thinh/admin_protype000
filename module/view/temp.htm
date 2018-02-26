@@ -1,0 +1,61 @@
+﻿<div class="viewItem">
+    <h1 class="title"><a href="/<%= item['Key'] %>.html" target="_blank"><%= item['Title'] %></a></h1>
+    <%= item['Content'] %>
+</div> 
+<style>
+
+    .viewItem {
+        width: calc(100% - 20px);
+        padding: 10px;
+    }
+
+        .viewItem .title {
+            text-align: center;
+            line-height: 25px;
+            font-size: 23px;
+        }
+
+    .viewItem {
+        height: calc(100% - 40px);
+        overflow-x: hidden;
+        overflow-y: auto;
+    }
+
+        .viewItem p {
+            padding: 5px 0;
+            font-size: 17px;
+            text-align: justify;
+            line-height: 24px;
+        }
+
+            .viewItem p.b {
+                padding-top: 10px;
+                text-align: left;
+            }
+
+            .viewItem p b {
+                font-size: 18px;
+                text-align: left;
+            }
+
+            .viewItem p.img {
+            }
+            
+    body.pc .viewItem p.img img {
+        max-width: 100%;
+    }
+
+    body.tablet .viewItem p.img img {
+        max-width: 400px;
+    }
+
+    body.mobile .viewItem p.img img {
+        max-width: 100%;
+    }
+
+    body.tablet .viewItem {
+    }
+
+    body.mobile .viewItem {
+    }
+</style>

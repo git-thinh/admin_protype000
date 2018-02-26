@@ -1,0 +1,104 @@
+http://tanalin.com/en/projects/display-table-htc/
+
+{display: table} for IE6 and IE7
+===============================================================
+
+display-table.htc is a JavaScript polyfill library intended to emulate CSS properties of display: table* family in Internet Explorer 6 and 7 which do not have their native support.
+
+The library is intended solely for IE6/IE7 and disables itself automatically in IE8 and higher.
+
+The emulation works by generating a real HTML table which automatically replaces original element intended to behave as a table. (Replacing to table happens in IE6/IE7 only. More modern browsers are not affected by the emulation at all.)
+
+Supported features include transparent emulation of display: table for all elements that have the nonstandard -dt-display: table CSS-property (without need for attaching display-table.htc explicitly to each such element), as well as emulation of the border-spacing CSS-property (via the -dt-border-spacing CSS-property).
+
+Caution
+Styles of original elements are not copied to generated table and should be attached to it explicitly.
+When attaching HTC component, absolute path to HTC file should be specified.
+Web server must return HTTP-response header Content-Type: text/x-component for HTC files.
+Usage
+HTML code:
+<ul id="nav" class="example">
+    <li><a href="/">Home</a></li>
+    <li><a href="/products/">Products</a></li>
+    <li><a href="/contacts/">Contacts</a></li>
+</ul>
+CSS code for all browsers:
+/* Standard CSS code for browsers supporting {display: table} */
+#nav    {border-spacing: 5px; display: table; } /* table */
+#nav LI {display: table-cell; } /* table cell */
+CSS code for IE6/IE7:
+/* HTC component is attached to element intended to behave as a table (recommended) */
+#nav {behavior: url(/_/js/display-table.min.htc); }
+
+/* Properties with -dt- prefix are used by display-table.htc */
+#nav    {-dt-border-spacing: 5px; } /* table */
+#nav LI {-dt-display: table-cell; } /* table cell */
+/* HTC component can be attached to BODY */
+BODY {behavior: url(/_/js/display-table.min.htc); }
+
+/* in such case, tably element should have -dt-display: table property */
+#nav    {-dt-border-spacing: 5px; -dt-display: table; } /* table */
+#nav LI {-dt-display: table-cell; } /* table cell */
+To attach HTC component to an element, path to HTC file should be specified in behavior CSS-property of the element. display-table.htc can be attached to BODY (or HTML) element or directly to an element to be converted to table.
+
+Note
+When attaching HTC components, only absolute paths from site root should be used always since relative paths as for HTC components are historically resolved not based on path of stylesheet containing CSS rule to attach HTC file, but based on path of HTML page that uses the stylesheet.
+In case of attaching to BODY or HTML, elements to be converted to table are determined by whether they have nonstandard -dt-display: table property.
+
+By default, source elements to generate rows and cells from are determined automatically based on nesting depth relatively to parent tably element (table → row → cell). If cell elements are direct children of tably element, then -dt-display: table-cell property should be specified for such cell elements — then intermediate table-row will be generated automatically during emulation.
+
+After display-table.htc has done its work, corresponding original tably element, as for HTML example above, will be replaced with such table:
+
+<table id="nav" class="example UL" cellpadding="0" cellspacing="5"><tbody valign="baseline">
+    <tr>
+        <td class="LI first LI-first"><a href="/">Home</a></td>
+        <td class="LI"><a href="/products/">Products</a></td>
+        <td class="LI last LI-last"><a href="/contacts/">Contacts</a></td>
+    </tr>
+</tbody></table>
+
+Features
+Identifiers (id attribute) and classes (class attribute) are copied from source table/row/cell elements to generated real ones.
+Generated tables, rows, and cells are automatically provided with classes which names are identical to tag names of source elements in uppercase (at that, all source classes are kept intact). This allows to make IE6/7-specific CSS code almost identical to CSS code for more modern browsers:
+
+/* For browsers with native support for {display: table}: */
+#example UL {...}
+#example LI {...}
+
+/* For IE6/7: */
+#example .UL {...}
+#example .LI {...}
+
+First and last rows and cells are provided with first and last classes respectively (if first and last elements are same one element, then this element will have both classes). For additional convenience, elements will have combined classes such as ELEMENT-first. For example, first row generated from UL element will have following classes: UL, first, and UL-first. If an element is the only child element of its parent element, then class like ELEMENT-first-last is added to the child element — this allows to work around lack of support for multiple-classes selectors (.first.last) in IE6.
+Vertical aligning for generated HTML table is baseline (according to default vertical aligning of regular elements that are displayed as table cells via CSS) and may be overridden using standard vertical-align CSS-property.
+Default padding of cells in generated HTML table is 0 (according to default padding of cells in regular CSS tables) and may be overridden using standard padding CSS-property of generated cell element.
+If direct children of table are cells instead of rows (with no intermediate row element), then -dt-display: table-cell CSS-property should be assigned to direct children of source table element to generate row in resulting HTML table automatically.
+If display-table.htc is attached to BODY or HTML element instead of element that itself is subject to be converted to table, then display: table emulation will be transparently applied to all elements that have -dt-display: table CSS-property.
+border-spacing CSS-property emulation is supported. To use it, add -dt-border-spacing which value duplicates value specified for standard border-spacing CSS-property. Default value for border-spacing is zero (according to default value for regular CSS tables).
+Separator elements (HR) placed in document tree in place of row or cell are automatically removed.
+Limitations
+Transparent automatic assigning of values of CSS properties of original elements to elements of generated HTML-table is not performed. For that reason, all CSS properties for elements of generated HTML table need to be specified explicitly in CSS rules intended exactly for IE6/7.
+Only regular rows can be generated (table-row; not table-header-group, etc.).
+Between table and its rows in DOM tree, additional TBODY element is generated since it is needed for IE6/IE7. Thereby, resulting hierarchy of elements in generated table will be following: TABLE > TBODY > TR > TD. It should be taken into account when using child CSS selectors (E1 > E2).
+If original element to generate table from cannot be directly replaced with table due to its semantics (DT, DD, LI), or if functioning of original element would be broken by replacing the element with table (FORM, A), then generated table replaces contents of the original table element instead of the element itself.
+Web-server settings
+Content-Type
+To make HTC component work, web server must return HTTP-response header Content-Type with value text/x-component. In Apache web-server, it can be done with following line in .htaccess file located in one of parent directories that contain the htc file:
+
+AddType text/x-component .htc
+
+Microsoft’s web-server — IIS — usually returns correct Content-Type header by default (without need for additional setting up).
+
+Caching
+By default, HTC files are not cached in browsers, and therefore they are downloaded from server again and again each time page loads. To make HTC-file caching possible, server should return Expires HTTP-header with a nonzero expiration period. In Apache web-server, this can be done with following lines in .htaccess file:
+
+# Caching any file for one hour (3600 seconds)
+ExpiresActive on
+ExpiresDefault A3600
+
+At that, Apache module named mod_expires should be enabled in Apache’s configuration (the module is usually enabled).
+
+Performance tips
+Attaching display-table.htc to BODY/HTML element is easier, but attaching it directly to element to be converted to table will result in much faster emulation. This is because attaching to BODY/HTML element results in consequent iterating though all elements of HTML document for the purpose of checking them for having -dt-display: table property — even if the document does not contain elements to be converted to table at all. The more elements in the document, the more time their iterating will take and the more noticeable will be a delay between initial rendering of the page and repeated rendering while elements are converted to tables.
+To avoid repeated applying HTC component to generated table, it makes sense to include tag name of original element into CSS selector of rule used for attaching display-table.htc (for example, DIV#nav instead of just #nav). In this case, the selector will match original element, but not table that is already generated from the original element. Protection from looping is provided (emulation script automatically shuts down itself if element to be converted to table is already table), but preventing another unneeded emulation iteration will improve performance anyway.
+To make it possible for HTC component to be cached by browser to prevent downloading it again and again with each page, web server should return correct Expires HTTP-response header (see “Web-server settings” → “Caching” section above).

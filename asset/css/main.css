@@ -1,0 +1,17 @@
+﻿*, html, body {
+    padding: 0px;
+    margin: 0px;
+}
+
+body {
+    font-family: Arial;
+    font-size: 13px;
+}
+
+.table {
+    display: table;
+}
+
+.table-cell {
+    display: table-cell;
+}

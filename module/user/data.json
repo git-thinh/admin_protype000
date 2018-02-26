@@ -1,0 +1,30 @@
+﻿[
+  {
+    "Username": "admin",
+    "Password": "Abc213",
+    "Email": "",
+    "Fullname": "",
+    "Phone": ""
+  },
+  {
+    "Username": "thinh",
+    "Password": "Abc213",
+    "Email": "",
+    "Fullname": "",
+    "Phone": ""
+  },
+  {
+    "Username": "koco",
+    "Password": "koco",
+    "Email": "",
+    "Fullname": "",
+    "Phone": ""
+  },
+  {
+    "Username": "",
+    "Password": "",
+    "Email": "",
+    "Fullname": "",
+    "Phone": ""
+  }
+]
